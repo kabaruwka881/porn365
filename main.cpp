@@ -134,52 +134,31 @@ struct Node {
     }
 };
 
-
-//Node* rotate_right(Node* root) {
-//    Node* temp = root->left;
-//    root->left = temp->right;
-//    temp->right = root;
-//    root->balance_factor += 1 - min(0, temp->balance_factor);
-//    temp->balance_factor += 1 + max(0, root->balance_factor);
-//    return temp;
-//}
-
-//Node* rotate_left(Node* root) {
-//    Node* temp = root->right;
-//    root->right = temp->left;
-//    temp->left = root;
-//    root->balance_factor -= 1 + max(0, temp->balance_factor);
-//    temp->balance_factor -= 1 - min(0, root->balance_factor);
-//    return temp;
-//}
-
-
-
 void balanceL(Node*& root, bool& h) {
-    Node* p1; // Для работы с правым поддеревом
-    Node* p2; // Для промежуточного узла при двойной ротации
+    Node* p1;
+    Node* p2;
 
-    if (root->balance_factor == -1) { // Если уменьшилась высота левого поддерева
+    if (root->balance_factor == -1) {
         root->balance_factor = 0;
     } else if (root->balance_factor == 0) {
         root->balance_factor = 1;
-        h = false; // Высота дерева не изменилась
-    } else { // root->balance_factor == 1
-        p1 = root->right; // Переход к правому поддереву
-        if (p1->balance_factor >= 0) { // Одинарная RR-ротация
+        h = false;
+    } else {
+        p1 = root->right;
+        if (p1->balance_factor >= 0) {
             root->right = p1->left;
             p1->left = root;
             if (p1->balance_factor == 0) {
                 root->balance_factor = 1;
                 p1->balance_factor = -1;
-                h = false; // Высота дерева не изменится
+                h = false;
 
-            } else { // p1->balance_factor == 1
+            } else {
                 root->balance_factor = 0;
                 p1->balance_factor = 0;
             }
-            root = p1; // Завершаем ротацию
-        } else { // Двойная RL-ротация
+            root = p1;
+        } else {
             p2 = p1->left;
             p1->left = p2->right;
             p2->right = p1;
@@ -205,29 +184,29 @@ void balanceL(Node*& root, bool& h) {
 }
 
 void balanceR(Node*& root, bool& h) {
-    Node* p1; // Для работы с левым поддеревом
-    Node* p2; // Для промежуточного узла при двойной ротации
+    Node* p1;
+    Node* p2;
 
-    if (root->balance_factor == 1) { // Если уменьшилась высота правого поддерева
+    if (root->balance_factor == 1) {
         root->balance_factor = 0;
     } else if (root->balance_factor == 0) {
         root->balance_factor = -1;
-        h = false; // Высота дерева не изменилась
-    } else { // root->balance_factor == -1
-        p1 = root->left; // Переход к левому поддереву
-        if (p1->balance_factor <= 0) { // Одинарная LL-ротация
+        h = false;
+    } else {
+        p1 = root->left;
+        if (p1->balance_factor <= 0) {
             root->left = p1->right;
             p1->right = root;
             if (p1->balance_factor == 0) {
                 root->balance_factor = -1;
                 p1->balance_factor = 1;
-                h = false; // Высота дерева не изменится
-            } else { // p1->balance_factor == -1
+                h = false;
+            } else {
                 root->balance_factor = 0;
                 p1->balance_factor = 0;
             }
-            root = p1; // Завершаем ротацию
-        } else { // Двойная LR-ротация
+            root = p1;
+        } else {
             p2 = p1->right;
             p1->right = p2->left;
             p2->left = p1;
@@ -257,8 +236,8 @@ void insert(Node*& root, const total_info& key, int& value, bool& h) {
     if (root == nullptr) {
         value++;
         root = new Node(key, value);
-        root->balance_factor = 0; // Новый узел всегда сбалансирован
-        h = true; // Высота дерева изменилась
+        root->balance_factor = 0;
+        h = true;
         return;
     } else if (key < root->key) {
         insert(root->left, key, value, h);
@@ -335,40 +314,6 @@ void insert(Node*& root, const total_info& key, int& value, bool& h) {
     }
 }
 
-// Node* choice_of_rotes(Node*& root) {
-//    //root->balance_factor = get_height(root->right) - get_height(root->left);
-//    if (root->balance_factor >= 2) {
-//        if (root->right && root->right->balance_factor < 0)
-//            root->right = rotate_right(root->right);
-//        return rotate_left(root);
-//    }
-//    if (root->balance_factor <= -2) {
-//        if (root->left && root->left->balance_factor > 0)
-//            root->left = rotate_left(root->left);
-//        return rotate_right(root);
-//    }
-//    return root;
-//}
-
-//void insert(Node*& root, const total_info& key, int& value) {
-//    if (root == nullptr) {
-//        value++;
-//        root = new Node(key, value);
-//        return;
-//    }
-//    if (key < root->key) {
-//        insert(root->left, key, value);
-//        root->balance_factor--;
-//    }
-//    else if (root->key < key) {
-//        insert(root->right, key, value);
-//        root->balance_factor++;
-//    }
-//    else {
-//        root->curr_list.push_back(++value);
-//    }
-//    root = choice_of_rotes(root);
-//}
 
 void search(Node *&root, const total_info& key) {
     if (root == nullptr) {
@@ -385,100 +330,53 @@ void search(Node *&root, const total_info& key) {
         search(root->right, key);
 }
 
-Node* find_min_node(Node* node, Node*& min_node) {
-    if (node->left == nullptr) {
-        min_node = node;
-        return node->right;
-    }
-    node->left = find_min_node(node->left, min_node);
-    node->balance_factor++;
-    return node;
-}
-
-//Node* delete_node(Node*& root, total_info key, int string_number) {
-//    if (root == nullptr)
-//        return nullptr;
-//    if (key < root->key) {
-//        root->left = delete_node(root->left, key, string_number);
-//        root->balance_factor++;
-//    }
-//    else if (root->key < key) {
-//        root->right = delete_node(root->right, key, string_number);
-//        root->balance_factor--;
-//    }
-//    else {
-//        Node* left = root->left;
-//        Node* right = root->right;
-//        if (root->curr_list.count_list() > 1) {
-//            root->curr_list.delete_by_value(string_number);
-//        } else {
-//            delete root;
-//            root = nullptr;
-//            if (left == nullptr)
-//                return right;
-//            else if (right == nullptr)
-//                return left;
-//            else {
-//                Node* min = nullptr;
-//                right = find_min_node(right, min);
-//                min->right = right;
-//                min->left = left;
-//                root = min;
-//                return choice_of_rotes(root);
-//            }
-//        }
-//    }
-//    return choice_of_rotes(root);
-//}
-Node* del(Node*& root, bool h) {
-    Node* q = nullptr;
-    if (root->right == nullptr) {
-        del(root->right, h);
-        if (h) balanceR(root, h);
-    }
-    else {
-        q->key = root->key;
-        q->curr_list = root->curr_list;
-        q = root;
-        root = root->left;
-        h = true;
-    }
-    return q;
-}
-
-void delete_node(Node*& root, const total_info& key, int num, bool h) {
+Node* del(Node*& root, bool& h) {
     Node* q;
+    if (root->left == nullptr) {
+        q = root;
+        root = root->right;
+        h = true;
+        return q;
+    } else {
+        Node* deleted = del(root->left, h);
+        if (h) balanceL(root, h);
+        return deleted;
+    }
+}
 
+void delete_node(Node*& root, const total_info& key, int num, bool& h) {
     if (root == nullptr)
         return;
-    else if (key < root->key) {
+
+    if (key < root->key) {
         delete_node(root->left, key, num, h);
         if (h) balanceL(root, h);
-    }
-    else if (root->key < key) {
+    } else if (root->key < key) {
         delete_node(root->right, key, num, h);
         if (h) balanceR(root, h);
-    }
-    else {
+    } else {
         if (root->curr_list.count_list() > 1) {
             root->curr_list.delete_by_value(num);
+            h = false;
             return;
         }
-        q = root;
-        if (q->right == nullptr) {
-            root = q->left;
+        Node* q = root;
+        if (root->left == nullptr) {
+            root = root->right;
             h = true;
-        }
-        else if (q->left == nullptr) {
-            root = q->right;
+        } else if (root->right == nullptr) {
+            root = root->left;
             h = true;
+        } else {
+            q = del(root->right, h);
+            root->key = q->key;
+            root->curr_list = q->curr_list;
+            if (h) balanceR(root, h);
         }
-        else {
-            q->left = del(q->left, h);
-            if (h) balanceL(root, h);
-        }
+        delete q;
     }
 }
+
 void right_left_print(Node*& root) {
     if (root == nullptr)
         return;
@@ -557,14 +455,14 @@ void files_parser(Node*& root, fstream& file_input, int& value) {
 void files_output(Node*& root, ofstream& file_output) {
     if (root == nullptr)
         return;
-    files_output(root->left, file_output);
+    files_output(root->right, file_output);
     ListNode* temp = root->curr_list.head;
     do {
         file_output << temp->data << " ";
         file_output << root->key.surname << " " << root->key.name << " " << root->key.patronymic << " " << root->key.pass_series << " " << root->key.pass_num << endl;
         temp = temp->next;
     } while (temp != root->curr_list.head);
-    files_output(root->right, file_output);
+    files_output(root->left, file_output);
 }
 
 bool error_cin_processing() {
